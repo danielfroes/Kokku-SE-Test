@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using static AutoBattle.Types;
 
 namespace AutoBattle
 {
     public class Grid
     {
         public List<GridBox> grids = new List<GridBox>();
-        public int xLenght;
-        public int yLength;
-        public Grid(int Lines, int Columns)
+        public int _width;
+        public int _height;
+        public Grid(GridSize size)
         {
-            xLenght = Lines;
-            yLength = Columns;
-            Console.WriteLine("The battle field has been created\n");
-            for (int i = 0; i < Lines; i++)
+            _width = size.Width;
+            _height = size.Height;
+
+            for (int i = 0; i < _width; i++)
             {
-                    grids.Add(newBox);
-                for(int j = 0; j < Columns; j++)
+                for (int j = 0; j < _height; j++)
                 {
-                    GridBox newBox = new GridBox(j, i, false, (Columns * i + j));
-                    Console.Write($"{newBox.Index}\n");
+                    GridBox newBox = new GridBox(j, i, false, (_height * i + j));
+                    grids.Add(newBox);
+                    //Console.Write($"{newBox.Index}\n");
                 }
             }
         }
@@ -48,6 +45,35 @@ namespace AutoBattle
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
             Console.Write(Environment.NewLine + Environment.NewLine);
+        }
+
+    }
+
+    public struct GridSize
+    {
+
+        //TODO: Sera que eu ponho isso aqui como properties?
+        public int Width;
+        public int Height;
+
+        public bool IsValid()
+        {
+            return Width > 0 && Height > 0;
+        }
+    }
+    public struct GridBox
+    {
+        public int xIndex;
+        public int yIndex;
+        public bool ocupied;
+        public int Index;
+
+        public GridBox(int x, int y, bool ocupied, int index)
+        {
+            xIndex = x;
+            yIndex = y;
+            this.ocupied = ocupied;
+            this.Index = index;
         }
 
     }
