@@ -7,7 +7,7 @@ namespace AutoBattle
         //TODO: Ver se esse tipo de comportamento eh normal com .NET
         static void Main(string[] args)
         {
-            Game gameInstance = new Game();
+            GameManager gameInstance = new GameManager();
 
             gameInstance.StartGame();
 

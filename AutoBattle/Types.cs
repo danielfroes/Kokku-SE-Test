@@ -5,7 +5,7 @@
 
         public struct CharacterClassSpecific
         {
-            CharacterClass CharacterClass;
+            ICharacterClass CharacterClass;
             float hpModifier;
             float ClassDamage;
             CharacterSkills[] skills;
@@ -21,13 +21,6 @@
             float damageMultiplier;
         }
 
-        public enum CharacterClass : uint
-        {
-            Paladin = 1,
-            Warrior = 2,
-            Cleric = 3,
-            Archer = 4
-        }
-
+       
     }
 }
