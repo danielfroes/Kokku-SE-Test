@@ -1,7 +1,8 @@
 ﻿
 using System.Collections.Generic;
+using AutoBattle.CharacterActions;
 
-namespace AutoBattle
+namespace AutoBattle.CharacterClasses
 {
     public interface ICharacterClass
     {
@@ -13,7 +14,7 @@ namespace AutoBattle
         IReadOnlyList<ICharacterAction> GetValidActions(int targetDistance);
     }
 
-    
+
     //Paladin = 1,
     //Warrior = 2,
     //Cleric = 3,

@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoBattle.CharacterActions;
+using AutoBattle.CharacterClasses;
 
 namespace AutoBattle
 {
     class GameManager 
     {
         Battlefield _battlefield;
-        
-        Character _playerCharacter;
-        Character _enemyCharacter;
+
         List<Character> _characters = new List<Character>();
         bool _matchIsOver = false;
 
-
         readonly IReadOnlyList<ICharacterClass> _characterClasses = new List<ICharacterClass>
         {
-            new PaladinClass()
+            new PaladinClass(),
+            new ArcherClass(),
         };
 
         public void StartGame()
@@ -24,7 +24,6 @@ namespace AutoBattle
             InitializeGameBoard();
             StartGameLoop();
         }
-
 
         public void InitializeGameBoard()
         {
@@ -46,21 +45,18 @@ namespace AutoBattle
             _battlefield = new Battlefield(battlefieldSize);
             _battlefield.PlaceEntitiesRandomly(_characters.Cast<IBattlefieldEntity>());
         }
-       
+
 
         private List<Character> InitializeCharacters(ICharacterClass playerClass, ICharacterClass enemyClass)
         {
-            _playerCharacter = new Character(playerClass, "p");
-            _enemyCharacter = new Character(enemyClass, "e");
-
-            //TODO Fazer o target Dinamico;
-            _enemyCharacter.Target = _playerCharacter;
-            _playerCharacter.Target = _enemyCharacter;
-
-
             return new List<Character> {
-                _playerCharacter,
-                _enemyCharacter
+                new Character(ChooseEnemyClass(), "a"),
+                new Character(ChooseEnemyClass(), "b"),
+                new Character(ChooseEnemyClass(), "c"),
+                new Character(ChooseEnemyClass(), "d"),
+                new Character(ChooseEnemyClass(), "e"),
+                new Character(ChooseEnemyClass(), "f"),
+                new Character(ChooseEnemyClass(), "g"),
             };
         }
 
@@ -118,7 +114,7 @@ namespace AutoBattle
         private ICharacterClass ChooseEnemyClass()
         {
             ICharacterClass enemyClass = _characterClasses.GetRandomElement();
-            Console.WriteLine($"Enemy Class Choice: {enemyClass.DisplayName}");
+            // Console.WriteLine($"Enemy Class Choice: {enemyClass.DisplayName}");
              
             return enemyClass;
         }
@@ -137,15 +133,19 @@ namespace AutoBattle
             {
                 foreach (Character character in _characters)
                 {
-                    HandleTurn(character);
+                    if (character.IsDead)
+                        continue;
 
-                    if(CheckIfMatchEnded())
+                    HandleTurn(character);
+                    
+                    if (CheckIfMatchEnded())
                     {
                         _matchIsOver = true;
-                        break; 
+                        break;
                     }
-                      
-                    Console.WriteLine(Environment.NewLine + "Click on any key to start the next turn..." + Environment.NewLine + Environment.NewLine);
+
+                    Console.WriteLine(Environment.NewLine + "Click on any key to start the next turn..."
+                        + Environment.NewLine + Environment.NewLine);
                     Console.ReadKey();
                 }
             }
@@ -172,12 +172,13 @@ namespace AutoBattle
 
         public void HandleTurn(Character character)
         {
-            // Calcular o alvo (Battlefield -> Character)
-            Character target = character.Target;
+            Character target = GetNearestTarget(character);
+            // TODO : lidar com o caso que retorna null?
+
             ICharacterAction turnAction = character.DecideAction(target);
             string outputMessage = turnAction.Execute(character, target, _battlefield);
-
             Console.WriteLine(outputMessage);
+
             if (target.IsDead)
             {
                 Console.WriteLine($"{target.DisplaySymbol} has died !\n");
@@ -186,6 +187,27 @@ namespace AutoBattle
             _battlefield.Draw();
         }
 
+        private Character GetNearestTarget(Character character)
+        {
+            List<Character> possibleTargets = 
+                _characters.FindAll(target => target != character && !target.IsDead);
+
+            Character nearestTarget = null;
+            int nearestDistance = int.MaxValue;
+
+            foreach (Character possibleTarget in possibleTargets)
+            {
+                int targetDistance = character.Position.Distance(possibleTarget.Position);
+
+                if (nearestDistance > targetDistance)
+                {
+                    nearestTarget = possibleTarget;
+                    nearestDistance = targetDistance;
+                }
+            }
+
+            return nearestTarget;
+        }
     }
 }
 
@@ -227,5 +249,7 @@ namespace AutoBattle
 //
 // -> Refiz todo o fluxo do turno para deixar as responsabilidades mais modularizadas e código mais escalavel e legivel
 // -> O dano deixou de ser Random e agr está seguindo uma formula.
+// 
+// -> Fiz um método para achar o target dinamicamente a cada turno;
 // ;
 

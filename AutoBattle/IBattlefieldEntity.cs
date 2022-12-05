@@ -2,7 +2,7 @@
 {
     public interface IBattlefieldEntity
     {
-        GridCell Position { get; set; }
+        Position Position { get; set; }
         string DisplaySymbol { get; }
     }
 }

@@ -6,7 +6,7 @@ namespace AutoBattle
 {
     public class Grid
     {
-        List<GridCell> _cells = new List<GridCell>();
+        List<Position> _positions = new List<Position>();
         
         int _lines;
         int _columns;
@@ -21,11 +21,11 @@ namespace AutoBattle
             {
                 for (int x = 0; x < _columns ; x++)
                 {
-                    GridCell cell = new GridCell(x, y);
+                    Position cell = new Position(x, y);
 
                     cell.OnOccupantChange += OnCellOccupantChange; 
 
-                    _cells.Add(cell);
+                    _positions.Add(cell);
                 }
             }
         }
@@ -35,9 +35,9 @@ namespace AutoBattle
             _wasModified = true;
         }
 
-        public GridCell GetRandomEmptyCell()
+        public Position GetRandomEmptyPosition()
         { 
-            List<GridCell> unoccupiedCells = _cells.FindAll(cell => cell.Empty);
+            List<Position> unoccupiedCells = _positions.FindAll(cell => cell.Empty);
 
             if(unoccupiedCells.IsNullOrEmpty())
             {
@@ -57,7 +57,7 @@ namespace AutoBattle
                 Console.Write($"{y}\t");
                 for (int x = 0; x < _columns; x++)
                 {
-                    GridCell cell = GetCell(x, y);
+                    Position cell = GetCell(x, y);
 
                     Console.Write($"[{cell.OcuppantSymbol}]\t");
                 }
@@ -73,9 +73,9 @@ namespace AutoBattle
             Console.Write(Environment.NewLine + Environment.NewLine);
 
             _wasModified = false;
-
         }
-        public GridCell GetCell(int x, int y)
+
+        public Position GetCell(int x, int y)
         {
 
             //if (coordinate.X >= _grid.Lines || coordinate.Y >= _grid.Columns ||
@@ -86,14 +86,13 @@ namespace AutoBattle
 
             //TODO mudar isso aqui para ser uma referencia diret
             //(Columns * i + j)
-            return _cells.Find(cell => cell.Coordinate.X == x && cell.Coordinate.Y == y);
+            return _positions.Find(cell => cell.Coordinate.X == x && cell.Coordinate.Y == y);
         }
-        public GridCell GetCell(Vector2 coordinate) => GetCell((int) coordinate.X, (int) coordinate.Y);
+        public Position GetPosition(Vector2 coordinate) => GetCell((int) coordinate.X, (int) coordinate.Y);
        
-
         public bool IsCellEmpty(Vector2 coordinate)
         {
-            return GetCell(coordinate)?.Empty ?? false;
+            return GetPosition(coordinate)?.Empty ?? false;
         }
     }
 

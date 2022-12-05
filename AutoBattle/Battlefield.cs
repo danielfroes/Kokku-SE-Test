@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace AutoBattle
@@ -7,10 +8,15 @@ namespace AutoBattle
     public class Battlefield
     {
         Grid _grid;
-        
+
         public Battlefield(Size size)
         {
             _grid = new Grid(size);
+        }
+
+        public void Draw()
+        {
+            _grid.Draw();
         }
 
         public void PlaceEntitiesRandomly(IEnumerable<IBattlefieldEntity> entities)
@@ -24,29 +30,19 @@ namespace AutoBattle
         void PlaceEntityInRandomPosition(IBattlefieldEntity entity)
         {
             //TODO fazer o tratamento de erro
-            GridCell randomPosition = _grid.GetRandomEmptyCell();
+            Position randomPosition = _grid.GetRandomEmptyPosition();
 
+            //Tirar esse print
             Console.Write($"Entity {entity.DisplaySymbol} was placed in {randomPosition.Coordinate}\n");
             PlaceEntity(entity, randomPosition);
         }
 
-        public bool TryPlaceEntity(IBattlefieldEntity entity, Vector2 coordinate)
+
+        void PlaceEntity(IBattlefieldEntity entity, Position newPosition)
         {
-            if (!IsCoordinateEmpty(coordinate))
-                return false;
-
-            GridCell newPosition = _grid.GetCell(coordinate);
-            PlaceEntity(entity, newPosition);
-
-            return true;
-        }
-
-        void PlaceEntity(IBattlefieldEntity entity, GridCell newPosition)
-        {
-
             if (entity.Position != null)
             {
-                GridCell oldPosition = entity.Position;
+                Position oldPosition = entity.Position;
                 oldPosition.Vacate();
             }
 
@@ -54,16 +50,37 @@ namespace AutoBattle
             entity.Position = newPosition;
         }
 
-       
-
-        public bool IsCoordinateEmpty(Vector2 coordinate)
+        public bool TryMoveEntity(IBattlefieldEntity entity, Vector2 direction, int steps)
         {
-            return _grid.IsCellEmpty(coordinate);        
+            Position position = GetEmptyPositionInDirection(entity, direction, steps);
+  
+            if (position == null)
+                return false;
+           
+            PlaceEntity(entity, position);
+            return true;
         }
 
-        public void Draw()
+        private Position GetEmptyPositionInDirection(IBattlefieldEntity entity, Vector2 targetDirection, int preferedSteps)
         {
-            _grid.Draw();
+            List<Position> possiblePositions = new List<Position>();
+
+            for(int i = preferedSteps; i > 0; i--)
+            {
+                possiblePositions.Add( _grid.GetPosition(
+                        entity.Position.Coordinate + Vector2.Normalize(targetDirection * Vector2.UnitX) * preferedSteps)
+                    );
+                possiblePositions.Add( _grid.GetPosition(
+                        entity.Position.Coordinate + Vector2.Normalize(targetDirection * Vector2.UnitY) * preferedSteps)
+                    );
+            }
+
+            possiblePositions.RemoveAll(cell => cell == null || !cell.Empty);
+
+            if (possiblePositions.Count == 0)
+                return null;
+
+            return possiblePositions[0];
         }
     }
 }
@@ -76,5 +93,5 @@ namespace AutoBattle
 // -> Criei uma interface para as entidades que vão ficar na campo de batalha, dessa forma já deixando
 //      preparado para eventuais novas entitades no jogo
 //
-//
+// -> Coloquei o método de mover para dentro do battlefield, pq aqui eu tenho acesso aos gridcells e deixava as ações mais simples de fazer
 // ;

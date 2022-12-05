@@ -3,9 +3,8 @@ using System.Numerics;
 
 namespace AutoBattle
 {
-    public class GridCell
+    public class Position
     {
-
         public const string EMPTY_SYMBOL = " ";
 
         public Vector2 Coordinate { get; }
@@ -14,19 +13,25 @@ namespace AutoBattle
 
         public event Action OnOccupantChange;
 
-        public GridCell(int x, int y)
+        public Position(int x, int y)
         {
             Coordinate = new Vector2(x, y);
             Empty = true;
             OcuppantSymbol = EMPTY_SYMBOL;
         }
         
-        public int DistanceFrom(GridCell targetCell)
+        public int Distance(Position target)
         {
-            return (int)(MathF.Abs(Coordinate.X - targetCell.Coordinate.X) + MathF.Abs(Coordinate.Y - targetCell.Coordinate.Y));
+            return (int) (MathF.Abs(Coordinate.X - target.Coordinate.X) + MathF.Abs(Coordinate.Y - target.Coordinate.Y));
         }
 
-        internal void Vacate()
+        public Vector2 DirectionTo(Position target)
+        {
+            return new Vector2(Math.Sign(target.Coordinate.X - Coordinate.X),
+                        Math.Sign(target.Coordinate.Y - Coordinate.Y));
+        }
+
+        public void Vacate()
         {
             Empty = true;
             OcuppantSymbol = EMPTY_SYMBOL;
@@ -34,12 +39,17 @@ namespace AutoBattle
             OnOccupantChange?.Invoke();
         }
 
-        internal void Occupy(string entitySymbol)
+        public void Occupy(string entitySymbol)
         {
             Empty = false;
             OcuppantSymbol = entitySymbol;
 
             OnOccupantChange?.Invoke();
+        }
+
+        public override string ToString()
+        {
+            return Coordinate.ToString();
         }
     }
 }

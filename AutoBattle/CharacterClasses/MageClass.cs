@@ -1,21 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using AutoBattle.CharacterActions;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace AutoBattle
+namespace AutoBattle.CharacterClasses
 {
-    public class PaladinClass : ICharacterClass
+    public class MageClass : ICharacterClass
     {
-        IReadOnlyList<ICharacterAction> _characterAction = new List<ICharacterAction>
-        {
-            new MeleeAttackAction(),
-        };
+        public string DisplaySymbol => "M";
+
+        public string DisplayName => "Mage";
+
+        public BattleStats BaseStats => new BattleStats(30, 10);
+
+        public int BaseHealth => 50;
 
         ICharacterAction _defaultAction = new WalkAction();
 
-        public BattleStats BaseStats => new BattleStats(20, 20);
-        public int BaseHealth => 100;
-
-        public string DisplaySymbol => "P";
-        public string DisplayName => "Paladin";
+        IReadOnlyList<ICharacterAction> _characterAction = new List<ICharacterAction>
+        {
+            new RangedAttackAction(),
+            new FireballAttackAction()
+        };
 
         public IReadOnlyList<ICharacterAction> GetValidActions(int targetDistance)
         {
