@@ -5,7 +5,7 @@ namespace AutoBattle
 {
     public static class GameConstants
     {
-        public static readonly IReadOnlyList<ACharacterClass> CHARACTER_CLASSES = new List<ACharacterClass>
+        public static readonly IReadOnlyList<ACharacterClass> ALL_CLASSES = new List<ACharacterClass>
         {
             new ArcherClass(),
             new MageClass(),

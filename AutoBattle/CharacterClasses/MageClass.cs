@@ -11,7 +11,7 @@ namespace AutoBattle.CharacterClasses
         public override ICharacterAction DefaultAction => _defaultAction;
         public override IReadOnlyList<ICharacterAction> Skills => _skills;
         public override ICharacterAction PassiveAction => _passiveAction;
-        public override int PassiveTriggerChance => 5;
+        public override int PassiveTriggerChance => 10;
 
         IReadOnlyList<ICharacterAction> _skills = new List<ICharacterAction>
         {
@@ -23,7 +23,7 @@ namespace AutoBattle.CharacterClasses
 
         ICharacterAction _passiveAction = new TeleportAction();
 
-        BattleStats _baseStats = new BattleStats(35, 5);
+        BattleStats _baseStats = new BattleStats(30, 5);
 
     }
 }

@@ -14,18 +14,18 @@ namespace AutoBattle
 
         public Grid(Size size)
         {
-            _lines = size.Width;
-            _columns = size.Height;
+            _lines = size.Height;
+            _columns = size.Width;
 
             for (int y = 0; y < _lines; y++)
             {
                 for (int x = 0; x < _columns ; x++)
                 {
-                    Position cell = new Position(x, y);
+                    Position position = new Position(x, y);
 
-                    cell.OnOccupantChange += OnCellOccupantChange; 
+                    position.OnOccupantChange += OnCellOccupantChange; 
 
-                    _positions.Add(cell);
+                    _positions.Add(position);
                 }
             }
         }
@@ -56,9 +56,9 @@ namespace AutoBattle
                 Console.Write($"{y}\t");
                 for (int x = 0; x < _columns; x++)
                 {
-                    Position cell = GetCell(x, y);
+                    Position position = GetPosition(x, y);
 
-                    Console.Write($"[{cell.OcuppantSymbol}]\t");
+                    Console.Write($"[{position.OcuppantSymbol}]\t");
                 }
                 Console.Write(Environment.NewLine + Environment.NewLine);
             }
@@ -74,25 +74,19 @@ namespace AutoBattle
             _wasModified = false;
         }
 
-        public Position GetCell(int x, int y)
+        public Position GetPosition(int x, int y)
         {
+            if (x >= _columns || y >= _lines ||
+                x < 0 || y < 0)
+            {
+                return null;
+            }
 
-            //if (coordinate.X >= _grid.Lines || coordinate.Y >= _grid.Columns ||
-            //    coordinate.X < 0 || coordinate.Y < 0)
-            //{
-            //    return false;
-            //}
-
-            //TODO mudar isso aqui para ser uma referencia diret
-            //(Columns * i + j)
-            return _positions.Find(cell => cell.Coordinate.X == x && cell.Coordinate.Y == y);
+            return _positions[_columns * y + x];
         }
-        public Position GetPosition(Vector2 coordinate) => GetCell((int) coordinate.X, (int) coordinate.Y);
+
+        public Position GetPosition(Vector2 coordinate) => GetPosition((int) coordinate.X, (int) coordinate.Y);
        
-        public bool IsCellEmpty(Vector2 coordinate)
-        {
-            return GetPosition(coordinate)?.Empty ?? false;
-        }
     }
 
 

@@ -22,7 +22,7 @@ namespace AutoBattle.CharacterClasses
         ICharacterAction _defaultAction = new WalkAction();
         ICharacterAction _passiveAction = new HealAction();
 
-        BattleStats _baseStats = new BattleStats(10, 30);
+        BattleStats _baseStats = new BattleStats(20, 20);
 
     }
 }

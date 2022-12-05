@@ -7,7 +7,7 @@ namespace AutoBattle.CharacterClasses
     public class KnockbackAction : ICharacterAction
     {
         const int BASE_DAMAGE = 10;
-        const int STEPS = 3;
+        const int STEPS = 2 ;
         const int RANGE = 2;
 
         public bool IsInRange(int targetDistance)

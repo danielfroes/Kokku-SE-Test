@@ -6,7 +6,7 @@ namespace AutoBattle
     {
         const float MULTIPLIER_STAGE = 0.5f;
         const float MAX_STAGE = 6;
-        const float MIN_STAGE = 6;
+        const float MIN_STAGE = -6;
 
         public int Attack =>  (int) (_attack * CalculateStatMultiplier(_attackStage));
         public int Defense => (int) (_defense * CalculateStatMultiplier(_defenseStage));
@@ -27,14 +27,12 @@ namespace AutoBattle
         }
         public void AddDefenseStage(int stages)
         {
-            _defenseStage += stages;
-            Math.Clamp(_defenseStage, MIN_STAGE, MAX_STAGE);
+            _defenseStage = (int) Math.Clamp(_defenseStage + stages, MIN_STAGE, MAX_STAGE);
         }
 
         public void AddAttackStage(int stages)
         {
-            _attackStage += stages;
-            Math.Clamp(_attackStage, MIN_STAGE, MAX_STAGE);
+            _attackStage = (int) Math.Clamp(_attackStage + stages, MIN_STAGE, MAX_STAGE);
         }
 
         float CalculateStatMultiplier(int statStage)
@@ -44,7 +42,7 @@ namespace AutoBattle
         }
 
 
-        public int CalculateDamage(int baseDamage, BattleStats target)
+        public int CalculateDamage(int baseDamage,BattleStats target)
         {
             int damage = Attack + baseDamage - target.Defense;
             return damage > 0 ? damage : 1;

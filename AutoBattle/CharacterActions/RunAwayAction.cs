@@ -4,7 +4,7 @@ namespace AutoBattle.CharacterActions
 {
     public class RunAwayAction : ICharacterAction
     {
-        const int STEPS = 2;
+        const int STEPS = 1;
         const int RANGE = 2;
         public bool IsInRange(int targetDistance)
         {
@@ -18,7 +18,7 @@ namespace AutoBattle.CharacterActions
 
             if (battlefield.TryMoveEntity(character, runAwayDirection, STEPS))
             {
-                return $"{character} runned from {target} to position {character.Position}";
+                return $"{character} runned away from {target} to position {character.Position}";
             }
 
             return $"{character} standed still in position {character.Position}";

@@ -6,7 +6,7 @@ namespace AutoBattle.CharacterActions
     {
         const int ADDED_DEBUFF_STAGE = -1;
 
-        const int RANGE = 10;
+        const int RANGE = 5;
 
         public bool IsInRange(int targetDistance)
         {

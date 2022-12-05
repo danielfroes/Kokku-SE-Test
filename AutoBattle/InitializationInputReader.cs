@@ -25,8 +25,8 @@ namespace AutoBattle
         public InitializationInputData ReadData()
         {
             Size battlefieldSize = GetBattlefieldSizeInput();
-            int teamSize = GetPlayerTeamSizeInput(battlefieldSize);
             TeamData playerTeam = GetPlayerTeamInput();
+            int teamSize = GetPlayerTeamSizeInput(battlefieldSize);
             IReadOnlyList<ACharacterClass> playerCharacterClasses = GetPlayerTeamClassesInput(teamSize);
 
             return new InitializationInputData(battlefieldSize, playerTeam, playerCharacterClasses);
@@ -79,7 +79,7 @@ namespace AutoBattle
             int input = -1;
             bool inputIsValid = false;
 
-            IReadOnlyList<ACharacterClass> characterClasses = GameConstants.CHARACTER_CLASSES;
+            IReadOnlyList<ACharacterClass> characterClasses = GameConstants.ALL_CLASSES;
 
             while (!inputIsValid)
             {

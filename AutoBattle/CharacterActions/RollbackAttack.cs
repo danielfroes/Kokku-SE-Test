@@ -7,7 +7,7 @@ namespace AutoBattle.CharacterActions
     {
         const int BASE_DAMAGE = 10;
         const int STEPS = 2;
-        const int RANGE = 10;
+        const int RANGE = 1;
 
         public bool IsInRange(int targetDistance)
         {

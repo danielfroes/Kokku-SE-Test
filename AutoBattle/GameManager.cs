@@ -20,6 +20,8 @@ namespace AutoBattle
 
         public void SetupGame()
         {
+            Console.WriteLine("Welcome To AutoBattler " + Environment.NewLine + Environment.NewLine);
+
             InitializationInputData inputData = new InitializationInputReader().ReadData();
             _battlefield = new Battlefield(inputData.BattlefieldSize);
             _characters = CreateCharacters(inputData.PlayerCharactersClasses, inputData.PlayerTeam);
@@ -35,41 +37,39 @@ namespace AutoBattle
 
             characters.AddRange(CreateCharactersFromTeam(playerCharactersClasses, playerTeam));
            
+
             foreach(TeamData team in remaingTeams)
             {
-                IEnumerable<ACharacterClass> randomClasses = GetRandomCharacterClasses(teamSize);
+                IReadOnlyList<ACharacterClass> randomClasses = GetRandomCharacterClasses(teamSize);
                 characters.AddRange(CreateCharactersFromTeam(randomClasses, team));
+            }
+
+            for(int i = 0; i < characters.Count; i++)
+            {
+                characters[i].TurnOrder = i;
             }
 
             return characters;
         }
 
-        IEnumerable<Character> CreateCharactersFromTeam(IEnumerable<ACharacterClass> charactersClasses, TeamData team)
+        IReadOnlyList<Character> CreateCharactersFromTeam(IReadOnlyList<ACharacterClass> charactersClasses, TeamData team)
         {
             List<Character> charactersCreated = new List<Character>();
-            //Dictionary<ACharacterClass, int> classIndexInTeam = new Dictionary<ACharacterClass, int>();
 
-            //foreach(ACharacterClass characterClass in GameConstants.CHARACTER_CLASSES)
-            //{
-            //    classIndexInTeam[characterClass] = 0;
-            //}
-            
-            foreach (ACharacterClass characterClass in charactersClasses)
+            for(int i = 0; i < charactersClasses.Count; i++)
             {
-                //charactersCreated.Add(new Character(characterClass, team, classIndexInTeam[characterClass]));
-                charactersCreated.Add(new Character(characterClass, team));
-                //classIndexInTeam[characterClass]++;
+                charactersCreated.Add(new Character(charactersClasses[i], team, i));
             }
 
             return charactersCreated;
         }
 
-        private List<ACharacterClass> GetRandomCharacterClasses(int amount)
+        private IReadOnlyList<ACharacterClass> GetRandomCharacterClasses(int amount)
         {
             List<ACharacterClass> randomClasses = new List<ACharacterClass>();
             for (int i = 0; i < amount; i++)
             {
-                randomClasses.Add(GameConstants.CHARACTER_CLASSES.GetRandomElement());
+                randomClasses.Add(GameConstants.ALL_CLASSES.GetRandomElement());
             }
             return randomClasses;
         }
@@ -93,19 +93,19 @@ namespace AutoBattle
                         continue;
 
                     HandleTurn(character);
-                    
+
                     if (CheckIfMatchEnded())
                     {
                         matchIsOver = true;
                         break;
                     }
 
-                    Console.WriteLine(Environment.NewLine + "Click on any key to start the next turn..."
-                        + Environment.NewLine + Environment.NewLine);
+                    Console.WriteLine($"{Environment.NewLine}Click on any key to start the next turn..." +
+                                $"{Environment.NewLine}{Environment.NewLine}");
+
                     Console.ReadKey();
                 }
             }
-
             Console.Write(Environment.NewLine);
             Console.WriteLine(GetMatchResult());
 
@@ -134,20 +134,20 @@ namespace AutoBattle
             Character target = GetNearestTarget(character);
 
             IEnumerable<ICharacterAction> turnActions = character.DecideTurnActions(target);
-            foreach(ICharacterAction action in turnActions)
+            string formatedMessage = string.Empty;
+            foreach (ICharacterAction action in turnActions)
             {
                 string outputMessage = action.Execute(character, target, _battlefield);
-                Console.WriteLine("-> " + outputMessage + Environment.NewLine);
+                formatedMessage += $"-> {outputMessage}{Environment.NewLine}";
             }
             
             if (target.IsDead)
             {
-                Console.WriteLine($"-> {target.DisplaySymbol} has died !{Environment.NewLine}");
+                formatedMessage += $"-> {target.DisplaySymbol} has died !{Environment.NewLine}";
             }
 
-            Console.WriteLine(Environment.NewLine);
-
             _battlefield.Draw();
+            Console.WriteLine(formatedMessage + Environment.NewLine);
         }
 
         private Character GetNearestTarget(Character character)

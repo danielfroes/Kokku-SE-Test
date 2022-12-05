@@ -9,7 +9,9 @@ namespace AutoBattle.CharacterActions
 
         public bool IsInRange(int targetDistance)
         {
-            return targetDistance <= RANGE;
+            bool result = targetDistance <= RANGE;
+
+            return result;
         }
 
         public string Execute(Character character, Character target, Battlefield battlefield)

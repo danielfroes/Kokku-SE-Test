@@ -15,14 +15,16 @@ namespace AutoBattle
         public bool IsDead {get; private set;}
         public TeamData Team { get;}
         public int CurrentHealth { get; private set;}
+        public int TurnOrder { get; set; }
 
         ACharacterClass _characterClass;
+        public string _symbol;
        
 
-        public Character(ACharacterClass characterClass, TeamData team, int classIndexInTeam)
+        public Character(ACharacterClass characterClass, TeamData team, int index)
         {
             _characterClass = characterClass;
-            DisplaySymbol = $"({characterClass.DisplaySymbol}{classIndexInTeam}){team.DisplaySymbol}";
+            DisplaySymbol = $"{characterClass.DisplaySymbol}{team.DisplaySymbol}({index})";
             CurrentHealth = characterClass.BaseHealth;
             BattleStats = characterClass.BaseStats;
             Team = team;
