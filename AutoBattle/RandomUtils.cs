@@ -2,7 +2,7 @@
 
 namespace AutoBattle
 {
-    public static class Utils
+    public static class RandomUtils
     {
         static Random _randomGenerator = new Random();
 
@@ -12,11 +12,7 @@ namespace AutoBattle
             return _randomGenerator.Next(min, max);
         }
 
-        public static bool TryReadInt(out int value)
-        {
-            string input = Console.ReadLine();
-            return Int32.TryParse(input, out value);
-        }
+        
     }
 }
 

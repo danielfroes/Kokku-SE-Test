@@ -1,45 +1,29 @@
-﻿using AutoBattle.CharacterActions;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using AutoBattle.CharacterActions;
 
 namespace AutoBattle.CharacterClasses
 {
-    public class MageClass : ICharacterClass
+    public class MageClass : ACharacterClass
     {
-        public string DisplaySymbol => "M";
+        public override int BaseHealth => 40;
+        public override BattleStats BaseStats => _baseStats;
+        protected override string DisplayName => "Mage";
+        public override ICharacterAction DefaultAction => _defaultAction;
+        public override IReadOnlyList<ICharacterAction> Skills => _skills;
+        public override ICharacterAction PassiveAction => _passiveAction;
+        public override int PassiveTriggerChance => 5;
 
-        public string DisplayName => "Mage";
-
-        public BattleStats BaseStats => new BattleStats(30, 10);
-
-        public int BaseHealth => 50;
-
-        ICharacterAction _defaultAction = new WalkAction();
-
-        IReadOnlyList<ICharacterAction> _characterAction = new List<ICharacterAction>
+        IReadOnlyList<ICharacterAction> _skills = new List<ICharacterAction>
         {
-            new RangedAttackAction(),
-            new FireballAttackAction()
+            new RunAwayAction(),
+            new KnockbackAction(),
         };
 
-        public IReadOnlyList<ICharacterAction> GetValidActions(int targetDistance)
-        {
-            List<ICharacterAction> validActions = new List<ICharacterAction>();
+        ICharacterAction _defaultAction = new MagicMissileAttack();
 
-            foreach (ICharacterAction action in _characterAction)
-            {
-                //TODO: tem um problema aqui pq para ranges de 3 por exemplo,
-                //uma distancia de 3 na diagonal vai da e eu nao quero q a diagonal valha
-                if (action.Range >= targetDistance)
-                    validActions.Add(action);
+        ICharacterAction _passiveAction = new TeleportAction();
 
-            }
+        BattleStats _baseStats = new BattleStats(35, 5);
 
-            if (validActions.Count == 0)
-                validActions.Add(_defaultAction);
-
-            return validActions;
-        }
     }
 }

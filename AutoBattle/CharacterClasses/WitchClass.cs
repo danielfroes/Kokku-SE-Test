@@ -3,26 +3,27 @@ using AutoBattle.CharacterActions;
 
 namespace AutoBattle.CharacterClasses
 {
-    public class PaladinClass : ACharacterClass
+    public class WitchClass : ACharacterClass
     {
-        public override int BaseHealth => 100;
+        public override int BaseHealth => 30;
         public override BattleStats BaseStats => _baseStats;
-        protected override string DisplayName => "Paladin";
+        protected override string DisplayName => "Witch";
         public override ICharacterAction DefaultAction => _defaultAction;
         public override IReadOnlyList<ICharacterAction> Skills => _skills;
         public override ICharacterAction PassiveAction => _passiveAction;
-        public override int PassiveTriggerChance => 20;
+        public override int PassiveTriggerChance => 5;
 
         IReadOnlyList<ICharacterAction> _skills = new List<ICharacterAction>
         {
-            new MeleeAttack(),
-            new ShieldAttack()
+            new ScareAction(),
+            new CurseAction(),
         };
 
-        ICharacterAction _defaultAction = new WalkAction();
-        ICharacterAction _passiveAction = new HealAction();
+        ICharacterAction _defaultAction = new TeleportAction();
 
-        BattleStats _baseStats = new BattleStats(10, 30);
+        ICharacterAction _passiveAction = new TeleportTargetAction();
+
+        BattleStats _baseStats = new BattleStats(5, 10);
 
     }
 }

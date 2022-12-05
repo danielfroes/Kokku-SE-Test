@@ -41,7 +41,6 @@ namespace AutoBattle
 
             if(unoccupiedCells.IsNullOrEmpty())
             {
-                //TODO tratamento de erro
                 return null;
             }
 
@@ -99,14 +98,22 @@ namespace AutoBattle
 
     public struct Size
     {
-        //TODO: Sera que eu ponho isso aqui como properties?
-        public int Width;
-        public int Height;
-
-        public bool IsValid()
+        public int Width
         {
-            return Width > 0 && Height > 0;
+            get => _width;
+            set => _width = Math.Max(value, 0);
         }
+
+        public int Height
+        {
+            get => _height;
+            set => _height = Math.Max(value, 0);
+        }
+
+        int _width;
+        int _height;
+
+        public int Area() => Width * Height; 
     }
 }
 // -> Troquei a Grid Cell de struct para classe pq ela tem estado mutavel, devido à variavel de ocupado

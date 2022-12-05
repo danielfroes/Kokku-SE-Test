@@ -1,13 +1,14 @@
-﻿using System;
+﻿using AutoBattle.CharacterActions;
 using System.Numerics;
+using System;
 
-namespace AutoBattle.CharacterActions
+namespace AutoBattle.CharacterClasses
 {
-    public class RollbackAttack : ICharacterAction
+    public class KnockbackAction : ICharacterAction
     {
         const int BASE_DAMAGE = 10;
-        const int STEPS = 2;
-        const int RANGE = 10;
+        const int STEPS = 3;
+        const int RANGE = 2;
 
         public bool IsInRange(int targetDistance)
         {
@@ -19,13 +20,14 @@ namespace AutoBattle.CharacterActions
             int finalDamage = character.BattleStats.CalculateDamage(BASE_DAMAGE, target.BattleStats);
             target.TakeDamage(finalDamage);
 
-            Vector2 rollbackDirection = -character.Position.DirectionTo(target.Position);
+            string outputMessage = $"{character} emmited a wave of energy in the {target}, dealing {finalDamage} damage";
 
-            string outputMessage = $"{character} attacked the {target} dealing {finalDamage} damage";
-            if (battlefield.TryMoveEntity(character, rollbackDirection, STEPS))
+            Vector2 knockbackDirection = character.Position.DirectionTo(target.Position);
+            if (battlefield.TryMoveEntity(target, knockbackDirection, STEPS))
             {
-                outputMessage += $" and rolled away to position {character.Position}";
+                outputMessage += $" and knocking it back to the position {target.Position}";
             }
+
             outputMessage += Environment.NewLine + $"{target} has {target.CurrentHealth} health left.";
 
             return outputMessage;

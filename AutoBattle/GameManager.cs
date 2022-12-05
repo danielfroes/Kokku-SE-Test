@@ -6,120 +6,74 @@ using AutoBattle.CharacterClasses;
 
 namespace AutoBattle
 {
-    class GameManager 
-    {
+    public class GameManager
+    { 
         Battlefield _battlefield;
-
         List<Character> _characters = new List<Character>();
-        bool _matchIsOver = false;
-
-        readonly IReadOnlyList<ICharacterClass> _characterClasses = new List<ICharacterClass>
-        {
-            new PaladinClass(),
-            new ArcherClass(),
-        };
 
         public void StartGame()
         {
-            InitializeGameBoard();
+            SetupGame();
             StartGameLoop();
         }
 
-        public void InitializeGameBoard()
+
+        public void SetupGame()
         {
-            //ICharacterClass playerClass = GetPlayerClassInput();
-            ICharacterClass playerClass = ChooseEnemyClass();
-            ICharacterClass enemyClass = ChooseEnemyClass();
+            InitializationInputData inputData = new InitializationInputReader().ReadData();
+            _battlefield = new Battlefield(inputData.BattlefieldSize);
+            _characters = CreateCharacters(inputData.PlayerCharactersClasses, inputData.PlayerTeam);
 
-            //Size battlefieldSize = GetBattlefieldSizeInput();
-
-            Size battlefieldSize = new Size()
-            {
-                Height = 10,
-                Width = 10,
-            };
-
-            //TODO da pra deixar isso mais generico mas se segura pq nao vale a pena pq isso vai mudar com o time
-            _characters = InitializeCharacters(playerClass, enemyClass);
-
-            _battlefield = new Battlefield(battlefieldSize);
-            _battlefield.PlaceEntitiesRandomly(_characters.Cast<IBattlefieldEntity>());
+            _battlefield.PlaceEntitiesRandomly(_characters.ConvertAll(character => character as IBattlefieldEntity));
         }
 
-
-        private List<Character> InitializeCharacters(ICharacterClass playerClass, ICharacterClass enemyClass)
+        List<Character> CreateCharacters(IReadOnlyList<ACharacterClass> playerCharactersClasses, TeamData playerTeam)
         {
-            return new List<Character> {
-                new Character(ChooseEnemyClass(), "a"),
-                new Character(ChooseEnemyClass(), "b"),
-                new Character(ChooseEnemyClass(), "c"),
-                new Character(ChooseEnemyClass(), "d"),
-                new Character(ChooseEnemyClass(), "e"),
-                new Character(ChooseEnemyClass(), "f"),
-                new Character(ChooseEnemyClass(), "g"),
-            };
-        }
+            List<Character> characters = new List<Character>();
+            List<TeamData> remaingTeams = GameConstants.TEAMS.ToList().FindAll(team => team != playerTeam);
+            int teamSize = playerCharactersClasses.Count;
 
-        #region Input Handling
-        ICharacterClass GetPlayerClassInput()
-        {
-            int input = -1;
-
-            while (input < 0 || input >= _characterClasses.Count)
+            characters.AddRange(CreateCharactersFromTeam(playerCharactersClasses, playerTeam));
+           
+            foreach(TeamData team in remaingTeams)
             {
-                Console.WriteLine("Choose Between One of this Classes:\n");
-                
-                for(int i = 0; i < _characterClasses.Count; i++)
-                {
-                    Console.Write($"[{i}] {_characterClasses[i].DisplayName} ");
-                }
-
-                Console.Write("\n");
-                
-                Utils.TryReadInt(out input);
-
-                //TODO: printar um erro se o input tiver errado 
-            }
-             
-            ICharacterClass chosenClass = _characterClasses[input];
-
-            Console.WriteLine($"Player Class Choice: {chosenClass.DisplayName}");
-            return chosenClass;
-        }
-
-        Size GetBattlefieldSizeInput()
-        {
-            Size battlefieldSize = default;
-
-
-            //TODO : Mudar o jeito de pegar esse input para algo mais intuitivo
-            while (!battlefieldSize.IsValid())
-            {
-                Console.WriteLine("Choose the width of the battlefield.\n");
-                Utils.TryReadInt(out battlefieldSize.Width);
-
-                Console.WriteLine("Choose the height of the battlefield.\n");
-                Utils.TryReadInt(out battlefieldSize.Height);
-
-                //TODO: checar aqui se o numero de celulas cabem o numero de players
-                //TODO: printar um erro se o input tiver errado 
+                IEnumerable<ACharacterClass> randomClasses = GetRandomCharacterClasses(teamSize);
+                characters.AddRange(CreateCharactersFromTeam(randomClasses, team));
             }
 
-
-            Console.WriteLine("The battle field has been created\n");
-
-            return battlefieldSize;
+            return characters;
         }
 
-        private ICharacterClass ChooseEnemyClass()
+        IEnumerable<Character> CreateCharactersFromTeam(IEnumerable<ACharacterClass> charactersClasses, TeamData team)
         {
-            ICharacterClass enemyClass = _characterClasses.GetRandomElement();
-            // Console.WriteLine($"Enemy Class Choice: {enemyClass.DisplayName}");
-             
-            return enemyClass;
+            List<Character> charactersCreated = new List<Character>();
+            //Dictionary<ACharacterClass, int> classIndexInTeam = new Dictionary<ACharacterClass, int>();
+
+            //foreach(ACharacterClass characterClass in GameConstants.CHARACTER_CLASSES)
+            //{
+            //    classIndexInTeam[characterClass] = 0;
+            //}
+            
+            foreach (ACharacterClass characterClass in charactersClasses)
+            {
+                //charactersCreated.Add(new Character(characterClass, team, classIndexInTeam[characterClass]));
+                charactersCreated.Add(new Character(characterClass, team));
+                //classIndexInTeam[characterClass]++;
+            }
+
+            return charactersCreated;
         }
 
-        #endregion
+        private List<ACharacterClass> GetRandomCharacterClasses(int amount)
+        {
+            List<ACharacterClass> randomClasses = new List<ACharacterClass>();
+            for (int i = 0; i < amount; i++)
+            {
+                randomClasses.Add(GameConstants.CHARACTER_CLASSES.GetRandomElement());
+            }
+            return randomClasses;
+        }
+
 
         public void StartGameLoop()
         {
@@ -129,7 +83,9 @@ namespace AutoBattle
             Console.Write(Environment.NewLine);
             Console.ReadKey();
 
-            while (!_matchIsOver)
+            bool matchIsOver = false;
+
+            while (!matchIsOver)
             {
                 foreach (Character character in _characters)
                 {
@@ -140,7 +96,7 @@ namespace AutoBattle
                     
                     if (CheckIfMatchEnded())
                     {
-                        _matchIsOver = true;
+                        matchIsOver = true;
                         break;
                     }
 
@@ -158,55 +114,69 @@ namespace AutoBattle
         private string GetMatchResult()
         {
             Character winner = _characters.Find(character => !character.IsDead);
-            if (winner == null)
-                return "The Match Was a Tie!";
 
-            return $"The winner was {winner.DisplaySymbol}";
+            if (winner == null)
+                return "The Match Was a Tie! No Team Won";
+
+            return $"The winner was Team {winner.Team}";
         }
 
         private bool CheckIfMatchEnded()
         {
-            List<Character> deadCharacters = _characters.FindAll(character => character.IsDead);
-            return deadCharacters.Count >= _characters.Count - 1;
+            List<Character> aliveCharacters = _characters.FindAll(character => !character.IsDead);
+
+            return aliveCharacters.Count == 0 ||
+                aliveCharacters.TrueForAll(character => character.Team == aliveCharacters[0].Team) ;
         }
 
         public void HandleTurn(Character character)
         {
             Character target = GetNearestTarget(character);
-            // TODO : lidar com o caso que retorna null?
 
-            ICharacterAction turnAction = character.DecideAction(target);
-            string outputMessage = turnAction.Execute(character, target, _battlefield);
-            Console.WriteLine(outputMessage);
-
+            IEnumerable<ICharacterAction> turnActions = character.DecideTurnActions(target);
+            foreach(ICharacterAction action in turnActions)
+            {
+                string outputMessage = action.Execute(character, target, _battlefield);
+                Console.WriteLine("-> " + outputMessage + Environment.NewLine);
+            }
+            
             if (target.IsDead)
             {
-                Console.WriteLine($"{target.DisplaySymbol} has died !\n");
+                Console.WriteLine($"-> {target.DisplaySymbol} has died !{Environment.NewLine}");
             }
+
+            Console.WriteLine(Environment.NewLine);
 
             _battlefield.Draw();
         }
 
         private Character GetNearestTarget(Character character)
         {
-            List<Character> possibleTargets = 
-                _characters.FindAll(target => target != character && !target.IsDead);
+            IEnumerable<Character> validTargets = GetValidTargets(character);
 
             Character nearestTarget = null;
             int nearestDistance = int.MaxValue;
 
-            foreach (Character possibleTarget in possibleTargets)
+            foreach (Character target in validTargets)
             {
-                int targetDistance = character.Position.Distance(possibleTarget.Position);
+                int targetDistance = character.Position.Distance(target.Position);
 
                 if (nearestDistance > targetDistance)
                 {
-                    nearestTarget = possibleTarget;
+                    nearestTarget = target;
                     nearestDistance = targetDistance;
                 }
             }
 
             return nearestTarget;
+        }
+
+        private IReadOnlyList<Character> GetValidTargets(Character character)
+        {
+            return _characters.FindAll(target =>
+                    target != character &
+                    !target.IsDead &
+                    target.Team != character.Team);
         }
     }
 }

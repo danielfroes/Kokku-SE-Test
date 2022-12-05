@@ -11,7 +11,7 @@ namespace AutoBattle
                 return default;
             }
 
-            int randomIndex = Utils.GetRandomNumber(0, list.Count);
+            int randomIndex = RandomUtils.GetRandomNumber(0, list.Count);
 
             return list[randomIndex];
         }

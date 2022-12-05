@@ -1,10 +1,10 @@
 ﻿namespace AutoBattle.CharacterActions
 {
+
     public interface ICharacterAction
     {
-        int Range { get; }
-
         string Execute(Character character, Character target, Battlefield battlefield);
+        bool IsInRange(int targetDistance);
     }
 
 

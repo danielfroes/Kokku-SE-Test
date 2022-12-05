@@ -7,6 +7,8 @@ namespace AutoBattle
 {
     public class Battlefield
     {
+        public const int MIN_AREA_SIZE = 2;
+
         Grid _grid;
 
         public Battlefield(Size size)
@@ -23,18 +25,18 @@ namespace AutoBattle
         {
             foreach(IBattlefieldEntity entity in entities)
             {
-                PlaceEntityInRandomPosition(entity);
+                TryPlaceEntityInRandomPosition(entity);
             }
         }
 
-        void PlaceEntityInRandomPosition(IBattlefieldEntity entity)
+        public bool TryPlaceEntityInRandomPosition(IBattlefieldEntity entity)
         {
-            //TODO fazer o tratamento de erro
             Position randomPosition = _grid.GetRandomEmptyPosition();
+            if(randomPosition == null) 
+                return false;
 
-            //Tirar esse print
-            Console.Write($"Entity {entity.DisplaySymbol} was placed in {randomPosition.Coordinate}\n");
             PlaceEntity(entity, randomPosition);
+            return true;
         }
 
 
