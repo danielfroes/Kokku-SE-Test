@@ -17,7 +17,6 @@ namespace AutoBattle
             StartGameLoop();
         }
 
-
         public void SetupGame()
         {
             Console.WriteLine("Welcome To AutoBattler " + Environment.NewLine + Environment.NewLine);
@@ -32,21 +31,15 @@ namespace AutoBattle
         List<Character> CreateCharacters(IReadOnlyList<ACharacterClass> playerCharactersClasses, TeamData playerTeam)
         {
             List<Character> characters = new List<Character>();
-            List<TeamData> remaingTeams = GameConstants.TEAMS.ToList().FindAll(team => team != playerTeam);
+            List<TeamData> remainingTeams = GameConstants.TEAMS.ToList().FindAll(team => team != playerTeam);
             int teamSize = playerCharactersClasses.Count;
 
             characters.AddRange(CreateCharactersFromTeam(playerCharactersClasses, playerTeam));
            
-
-            foreach(TeamData team in remaingTeams)
+            foreach(TeamData team in remainingTeams)
             {
                 IReadOnlyList<ACharacterClass> randomClasses = GetRandomCharacterClasses(teamSize);
                 characters.AddRange(CreateCharactersFromTeam(randomClasses, team));
-            }
-
-            for(int i = 0; i < characters.Count; i++)
-            {
-                characters[i].TurnOrder = i;
             }
 
             return characters;
@@ -106,9 +99,18 @@ namespace AutoBattle
                     Console.ReadKey();
                 }
             }
+
             Console.Write(Environment.NewLine);
             Console.WriteLine(GetMatchResult());
 
+        }
+
+        private bool CheckIfMatchEnded()
+        {
+            List<Character> aliveCharacters = _characters.FindAll(character => !character.IsDead);
+
+            return aliveCharacters.Count == 0 ||
+                aliveCharacters.TrueForAll(character => character.Team == aliveCharacters[0].Team);
         }
 
         private string GetMatchResult()
@@ -121,13 +123,6 @@ namespace AutoBattle
             return $"The winner was Team {winner.Team}";
         }
 
-        private bool CheckIfMatchEnded()
-        {
-            List<Character> aliveCharacters = _characters.FindAll(character => !character.IsDead);
-
-            return aliveCharacters.Count == 0 ||
-                aliveCharacters.TrueForAll(character => character.Team == aliveCharacters[0].Team) ;
-        }
 
         public void HandleTurn(Character character)
         {
@@ -180,46 +175,3 @@ namespace AutoBattle
         }
     }
 }
-
-
-
-
-
-
-// -> Coloquei os métodos que estao encadeados um no outro no fluxo do método principal,
-// para tornar o fluxo do turno mais legivel
-//
-// -> Separei o método start Game em um método de inicialização do board e um método para começar o game loop
-//
-// -> Retirei a recursão presente entre o start turn e o handle turn e
-// transformei num while que vai representar o game loop
-// (onde vai ser controlado os turnos)
-//
-//
-// -> Deletei o Start Turn e o Handle Turn e
-// coloquei suas implementaççoes no while do game loop pra modularizar melhor depois
-//
-//
-// -> Tirei a recursão do método de pegar o input da classe do personagem, dessa forma, não deixando funções penduradas
-//      na memória a cada erro. Também tirei o switch Case da função, pois ele era desnecessário se fosse feito o parsing
-//      do input para int direto. Por fim separei a responsabilidade dessa função para so pegar o input e retorna-lo,
-//      extraindo a funcianalidade de criar o personagem.
-//
-// -> Criei método para ler o gridSize e criei struct para guardar a informação do GridSize
-//
-//
-// -> Troquei todos os parses de string para int para tryParse para tratar os casos que não escreviam números
-// -> Criei método  para ler um int do console;
-//
-// -> Extrair o funcionalidade de escolher a classe do inimigo e deletei os métodos de criação do player e dos inimigos,
-//      substituindo pelo construtor de Character. Coloquei a inicialização dos status no Construtor do Character]
-//
-// -> Coloquei a responsabilidade de achar uma grid vazia para um método dentro da grid e tirei a recursão do AllocatePlayers
-// -> Deletei as duas funções de AlocatePlayer e AlocateEnemys e fiz um foreach chamando a placeEntityInBattlefield
-//
-// -> Refiz todo o fluxo do turno para deixar as responsabilidades mais modularizadas e código mais escalavel e legivel
-// -> O dano deixou de ser Random e agr está seguindo uma formula.
-// 
-// -> Fiz um método para achar o target dinamicamente a cada turno;
-// ;
-

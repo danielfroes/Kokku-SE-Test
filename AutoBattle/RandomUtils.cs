@@ -17,8 +17,3 @@ namespace AutoBattle
 }
 
 
-
-
-// -> Criei uma classe de Utils para deixar centralizado Comportamentos
-//    que genericos que seriam utilizado pleo projeto todo
-

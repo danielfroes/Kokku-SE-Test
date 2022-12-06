@@ -15,7 +15,6 @@ namespace AutoBattle
         public bool IsDead {get; private set;}
         public TeamData Team { get;}
         public int CurrentHealth { get; private set;}
-        public int TurnOrder { get; set; }
 
         ACharacterClass _characterClass;
         public string _symbol;
@@ -89,6 +88,3 @@ namespace AutoBattle
     }
 }
 
-// -> Fiz uma abtração das classes com a interface CharacterClass
-// -> Movimento virou uma ação do character, assim como ataque e ataques especiais
-// -> Tirei o playerIndex e transformei em um DisplaySymbol para diferenciar eles.

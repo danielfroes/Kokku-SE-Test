@@ -87,13 +87,3 @@ namespace AutoBattle
     }
 }
 
-// -> Troquei a Grid Cell de struct para classe pq ela tem estado mutavel, devido à variavel de ocupado
-// -> Criei uma nova classe chamada Battlefield para servir de intermedio entre a interação dos players com a grid,
-//      Abstraindo esses comportamentos e tirando essa responsabilidade do própio character e do Game Manager.
-//  
-//
-// -> Criei uma interface para as entidades que vão ficar na campo de batalha, dessa forma já deixando
-//      preparado para eventuais novas entitades no jogo
-//
-// -> Coloquei o método de mover para dentro do battlefield, pq aqui eu tenho acesso aos gridcells e deixava as ações mais simples de fazer
-// ;
